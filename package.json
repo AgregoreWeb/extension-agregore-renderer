@@ -1,0 +1,31 @@
+{
+  "name": "extension-agregore-renderer",
+  "version": "1.0.0",
+  "description": "A generalized Markdown/Gemini/ETC content renderer for Agregore. Replaces the old Markdown/Gemini renderers",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-markdown": "browserify ./markdown.js > bundle-markdown.js",
+    "build-json": "browserify ./json.js > bundle-json.js",
+    "build-gemini": "browserify ./gemini.js > bundle-gemini.js",
+    "build": "npm run build-markdown && npm run build-json && npm run build-gemini"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RangerMauve/extension-agregore-renderer.git"
+  },
+  "author": "rangermauve <ranger@mauve.moe> (https://mauve.moe/)",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/RangerMauve/extension-agregore-renderer/issues"
+  },
+  "homepage": "https://github.com/RangerMauve/extension-agregore-renderer#readme",
+  "devDependencies": {
+    "browserify": "^17.0.0"
+  },
+  "dependencies": {
+    "escape-html": "^1.0.3",
+    "gemini-to-html": "^2.1.0",
+    "marked": "^4.0.16"
+  }
+}
