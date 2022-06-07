@@ -24,6 +24,7 @@ if(knownType) {
   const src = SCRIPT_MAP[knownType]
   const script = document.createElement('script')
   script.setAttribute('src', src)
+  script.setAttribute('charset', 'utf-8')
   document.body.appendChild(script)
 }
 `
