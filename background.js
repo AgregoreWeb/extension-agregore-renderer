@@ -3,17 +3,23 @@ const FORBIDDEN_PROTOCOLS = ['devtools:']
 
 chrome.webNavigation.onDOMContentLoaded.addListener(handleLoaded)
 
+/**
+ * ssb-fetch returns application/ssb+json for 'post' messages
+ * application/json for other message types
+ */
 const TYPE_MAP = {
   'text/plain': 'markdown',
   'text/markdown': 'markdown',
   'text/gemini': 'gemini',
-  'application/json': 'json'
+  'application/json': 'json',
+  'application/ssb+json': 'ssb'
 }
 
 const SCRIPT_MAP = {
   markdown: scriptURL('markdown'),
   gemini: scriptURL('gemini'),
-  json: scriptURL('json')
+  json: scriptURL('json'),
+  ssb: scriptURL('ssb')
 }
 
 const code = `
