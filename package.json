@@ -1,6 +1,6 @@
 {
   "name": "extension-agregore-renderer",
-  "version": "1.0.2",
+  "version": "1.2.0",
   "description": "A generalized Markdown/Gemini/ETC content renderer for Agregore. Replaces the old Markdown/Gemini renderers",
   "private": true,
   "scripts": {
@@ -33,6 +33,7 @@
     "marked": "^4.0.16",
     "ssb-fetch": "^1.5.2",
     "ssb-markdown": "github:av8ta/ssb-markdown",
+    "ssb-ref": "^2.16.0",
     "ssb-uri2": "^1.8.1"
   },
   "standard": {
