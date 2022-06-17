@@ -19,6 +19,7 @@
 	"web_accessible_resources": [
 		"bundle-gemini.js",
 		"bundle-markdown.js",
-		"bundle-json.js"
+		"bundle-json.js",
+		"bundle-ssb.js"
 	]
 }

@@ -1,14 +1,16 @@
 {
   "name": "extension-agregore-renderer",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A generalized Markdown/Gemini/ETC content renderer for Agregore. Replaces the old Markdown/Gemini renderers",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard --fix",
     "build-markdown": "browserify ./markdown.js > bundle-markdown.js",
     "build-json": "browserify ./json.js > bundle-json.js",
     "build-gemini": "browserify ./gemini.js > bundle-gemini.js",
-    "build": "npm run build-markdown && npm run build-json && npm run build-gemini"
+    "build-ssb": "browserify ./ssb.js > bundle-ssb.js",
+    "build": "npm run build-markdown && npm run build-json && npm run build-gemini && npm run build-ssb"
   },
   "repository": {
     "type": "git",
@@ -21,11 +23,22 @@
   },
   "homepage": "https://github.com/RangerMauve/extension-agregore-renderer#readme",
   "devDependencies": {
-    "browserify": "^17.0.0"
+    "browserify": "^17.0.0",
+    "standard": "^17.0.0"
   },
   "dependencies": {
     "escape-html": "^1.0.3",
     "gemini-to-html": "^2.1.0",
-    "marked": "^4.0.16"
+    "html-to-text": "^8.2.0",
+    "marked": "^4.0.16",
+    "ssb-fetch": "^1.5.2",
+    "ssb-markdown": "github:av8ta/ssb-markdown",
+    "ssb-ref": "^2.16.0",
+    "ssb-uri2": "^1.8.1"
+  },
+  "standard": {
+    "ignore": [
+      "bundle-*.js"
+    ]
   }
 }
