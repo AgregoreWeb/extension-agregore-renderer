@@ -3,7 +3,7 @@
 const escapeHtml = require('escape-html')
 const renderPage = require('./template.js')
 
-const URL_REGEX = /^\w+:[^\s<>]+$/
+const URL_REGEX = /(^\w+:|\.\/|\.\.\/|\/)[^\s<>"]+$/
 
 // Might only work on Chromium
 const text = document.querySelector('pre').innerText
@@ -42,11 +42,11 @@ function render (json, suffix = '') {
       const suffix = isLast ? '' : ','
       return `<li>${render(value, suffix)}</li>`
     }).join('\n')
-    return collapsable(`<ul>
+    return `<ul>${collapsable(`
     <span>[</span>
     ${values}
     <span>]</span>
-    </ul>`)
+    `)}</ul>`
   } else if (typeof json === 'object' && json !== null) {
     const keys = Object.keys(json)
     // Special case for IPLD dag-json data with links
@@ -58,19 +58,19 @@ function render (json, suffix = '') {
       const suffix = isLast ? '' : ','
 
       const renderedKey = escapeHtml(JSON.stringify(key))
-      const renderedValue = isCID ? makeLink(makeIPLDLink(json), suffix) : render(value, suffix)
+      const renderedValue = isCID ? makeLink(makeIPLDLink(value), suffix, value) : render(value, suffix)
 
       return `<dt>${renderedKey}:</dt><dd>${renderedValue}</dd>`
     }).join('\n')
 
-    return collapsable(`<dl>
+    return `<dl>${collapsable(`
     <span>{</span>
     ${values}
     <span>}</span>${suffix}
-    </dl>`)
+    `)}</dl>`
   } else {
     if (isURL(json)) {
-      return `"${makeLink(json)}"${suffix}`
+      return makeLink(json, suffix)
     }
     const escaped = escapeHtml(JSON.stringify(json))
     return `${escaped}${suffix}`
@@ -81,8 +81,8 @@ function isURL (value) {
   return (typeof value === 'string') && value.match(URL_REGEX)
 }
 
-function makeLink (url, suffix) {
-  return `"<a href="${url}">${escapeHtml(JSON.stringify(url))}</a>"${suffix}`
+function makeLink (url, suffix, value=url) {
+  return `"<a href="${url}">${escapeHtml(value)}</a>"${suffix}`
 }
 
 function makeIPLDLink (cid) {
@@ -90,5 +90,5 @@ function makeIPLDLink (cid) {
 }
 
 function collapsable (content) {
-  return `<details><summary></summary>${content}</details>`
+  return `<details open><summary></summary>${content}</details>`
 }
