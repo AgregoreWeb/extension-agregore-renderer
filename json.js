@@ -42,11 +42,12 @@ function render (json, suffix = '') {
       const suffix = isLast ? '' : ','
       return `<li>${render(value, suffix)}</li>`
     }).join('\n')
-    return `<ul>${collapsable(`
+
+    return `<ul>
     <span>[</span>
     ${values}
     <span>]</span>
-    `)}</ul>`
+    </ul>`
   } else if (typeof json === 'object' && json !== null) {
     const keys = Object.keys(json)
     // Special case for IPLD dag-json data with links
@@ -63,11 +64,11 @@ function render (json, suffix = '') {
       return `<dt>${renderedKey}:</dt><dd>${renderedValue}</dd>`
     }).join('\n')
 
-    return `<dl>${collapsable(`
+    return `<dl>
     <span>{</span>
     ${values}
     <span>}</span>${suffix}
-    `)}</dl>`
+    </dl>`
   } else {
     if (isURL(json)) {
       return makeLink(json, suffix)
@@ -87,8 +88,4 @@ function makeLink (url, suffix, value=url) {
 
 function makeIPLDLink (cid) {
   return `ipld://${cid}/`
-}
-
-function collapsable (content) {
-  return `<details open><summary></summary>${content}</details>`
 }
