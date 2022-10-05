@@ -3,6 +3,8 @@
 const escapeHtml = require('escape-html')
 const renderPage = require('./template.js')
 
+const URL_REGEX = /^\w+:[^\s<>]+$/
+
 // Might only work on Chromium
 const text = document.querySelector('pre').innerText
 const parsed = JSON.parse(text)
@@ -40,13 +42,15 @@ function render (json, suffix = '') {
       const suffix = isLast ? '' : ','
       return `<li>${render(value, suffix)}</li>`
     }).join('\n')
-    return `<ul>
+    return collapsable(`<ul>
     <span>[</span>
     ${values}
     <span>]</span>
-    </ul>`
+    </ul>`)
   } else if (typeof json === 'object' && json !== null) {
     const keys = Object.keys(json)
+    // Special case for IPLD dag-json data with links
+    const isCID = keys.length === 1 && keys[0] === '/' && (typeof json['/'] === 'string')
     const values = Object.keys(json).map((key, index) => {
       const value = json[key]
       const isLast = index === (keys.length - 1)
@@ -54,18 +58,37 @@ function render (json, suffix = '') {
       const suffix = isLast ? '' : ','
 
       const renderedKey = escapeHtml(JSON.stringify(key))
-      const renderedValue = render(value, suffix)
+      const renderedValue = isCID ? makeLink(makeIPLDLink(json), suffix) : render(value, suffix)
 
       return `<dt>${renderedKey}:</dt><dd>${renderedValue}</dd>`
     }).join('\n')
 
-    return `<dl>
+    return collapsable(`<dl>
     <span>{</span>
     ${values}
     <span>}</span>${suffix}
-    </dl>`
+    </dl>`)
   } else {
+    if (isURL(json)) {
+      return `"${makeLink(json)}"${suffix}`
+    }
     const escaped = escapeHtml(JSON.stringify(json))
     return `${escaped}${suffix}`
   }
+}
+
+function isURL (value) {
+  return (typeof value === 'string') && value.match(URL_REGEX)
+}
+
+function makeLink (url, suffix) {
+  return `"<a href="${url}">${escapeHtml(JSON.stringify(url))}</a>"${suffix}`
+}
+
+function makeIPLDLink (cid) {
+  return `ipld://${cid}/`
+}
+
+function collapsable (content) {
+  return `<details><summary></summary>${content}</details>`
 }
