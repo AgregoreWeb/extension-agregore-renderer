@@ -23,7 +23,7 @@ const SCRIPT_MAP = {
 }
 
 const code = `
-((() => {
+(function (){
 const TYPE_MAP = ${JSON.stringify(TYPE_MAP)}
 const SCRIPT_MAP = ${JSON.stringify(SCRIPT_MAP)}
 const knownType = TYPE_MAP[document.contentType]
@@ -34,7 +34,7 @@ if(knownType) {
   script.setAttribute('charset', 'utf-8')
   document.body.appendChild(script)
 }
-}))())
+})()
 `
 
 console.log('Waiting to inject rendering code', { SCRIPT_MAP, TYPE_MAP })
