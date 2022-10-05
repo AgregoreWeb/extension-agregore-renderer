@@ -67550,6 +67550,38 @@ module.exports = urlParse;
     }
   }
 
+  function pad(s, length) {
+    if (s.length > length) {
+      return s
+    }
+    return Array(length - s.length + 1).join(" ") + s
+  }
+
+  function lastNLines(string, numLines) {
+    var position = string.length
+    var lineBreaks = 0;
+    while (true) {
+      var idx = string.lastIndexOf("\n", position - 1)
+      if (idx === -1) {
+        break;
+      } else {
+        lineBreaks++
+      }
+      position = idx
+      if (lineBreaks === numLines) {
+        break;
+      }
+      if (position === 0) {
+        break;
+      }
+    }
+    var startPosition = 
+      lineBreaks < numLines ?
+      0 : 
+      position + 1
+    return string.substring(startPosition).split("\n")
+  }
+
   function objectToRules(object) {
     var keys = Object.getOwnPropertyNames(object)
     var result = []
@@ -67832,39 +67864,31 @@ module.exports = urlParse;
   }
 
   function keywordTransform(map) {
-    var reverseMap = Object.create(null)
-    var byLength = Object.create(null)
+
+    // Use a JavaScript Map to map keywords to their corresponding token type
+    // unless Map is unsupported, then fall back to using an Object:
+    var isMap = typeof Map !== 'undefined'
+    var reverseMap = isMap ? new Map : Object.create(null)
+
     var types = Object.getOwnPropertyNames(map)
     for (var i = 0; i < types.length; i++) {
       var tokenType = types[i]
       var item = map[tokenType]
       var keywordList = Array.isArray(item) ? item : [item]
       keywordList.forEach(function(keyword) {
-        (byLength[keyword.length] = byLength[keyword.length] || []).push(keyword)
         if (typeof keyword !== 'string') {
           throw new Error("keyword must be string (in keyword '" + tokenType + "')")
         }
-        reverseMap[keyword] = tokenType
+        if (isMap) {
+          reverseMap.set(keyword, tokenType)
+        } else {
+          reverseMap[keyword] = tokenType
+        }
       })
     }
-
-    // fast string lookup
-    // https://jsperf.com/string-lookups
-    function str(x) { return JSON.stringify(x) }
-    var source = ''
-    source += 'switch (value.length) {\n'
-    for (var length in byLength) {
-      var keywords = byLength[length]
-      source += 'case ' + length + ':\n'
-      source += 'switch (value) {\n'
-      keywords.forEach(function(keyword) {
-        var tokenType = reverseMap[keyword]
-        source += 'case ' + str(keyword) + ': return ' + str(tokenType) + '\n'
-      })
-      source += '}\n'
+    return function(k) {
+      return isMap ? reverseMap.get(k) : reverseMap[k]
     }
-    source += '}\n'
-    return Function('value', source) // type
   }
 
   /***************************************************************************/
@@ -67883,6 +67907,7 @@ module.exports = urlParse;
     this.line = info ? info.line : 1
     this.col = info ? info.col : 1
     this.queuedToken = info ? info.queuedToken : null
+    this.queuedText = info ? info.queuedText: "";
     this.queuedThrow = info ? info.queuedThrow : null
     this.setState(info ? info.state : this.startState)
     this.stack = info && info.stack ? info.stack.slice() : []
@@ -67896,6 +67921,7 @@ module.exports = urlParse;
       state: this.state,
       stack: this.stack.slice(),
       queuedToken: this.queuedToken,
+      queuedText: this.queuedText,
       queuedThrow: this.queuedThrow,
     }
   }
@@ -68027,7 +68053,8 @@ module.exports = urlParse;
 
     // throw, if no rule with {error: true}
     if (group.shouldThrow) {
-      throw new Error(this.formatError(token, "invalid syntax"))
+      var err = new Error(this.formatError(token, "invalid syntax"))
+      throw err;
     }
 
     if (group.pop) this.popState()
@@ -68068,13 +68095,28 @@ module.exports = urlParse;
         col: this.col,
       }
     }
-    var start = Math.max(0, token.offset - token.col + 1)
-    var eol = token.lineBreaks ? token.text.indexOf('\n') : token.text.length
-    var firstLine = this.buffer.substring(start, token.offset + eol)
-    message += " at line " + token.line + " col " + token.col + ":\n\n"
-    message += "  " + firstLine + "\n"
-    message += "  " + Array(token.col).join(" ") + "^"
-    return message
+    
+    var numLinesAround = 2
+    var firstDisplayedLine = Math.max(token.line - numLinesAround, 1)
+    var lastDisplayedLine = token.line + numLinesAround
+    var lastLineDigits = String(lastDisplayedLine).length
+    var displayedLines = lastNLines(
+        this.buffer, 
+        (this.line - token.line) + numLinesAround + 1
+      )
+      .slice(0, 5)
+    var errorLines = []
+    errorLines.push(message + " at line " + token.line + " col " + token.col + ":")
+    errorLines.push("")
+    for (var i = 0; i < displayedLines.length; i++) {
+      var line = displayedLines[i]
+      var lineNo = firstDisplayedLine + i
+      errorLines.push(pad(String(lineNo), lastLineDigits) + "  " + line);
+      if (lineNo === token.line) {
+        errorLines.push(pad("", lastLineDigits + token.col + 1) + "^")
+      }
+    }
+    return errorLines.join("\n")
   }
 
   Lexer.prototype.clone = function() {
@@ -71769,11 +71811,23 @@ function isSSBURI(uri) {
 exports.isSSBURI = isSSBURI;
 function getFeedSSBURIRegex() {
     const type = 'feed';
-    const format = ['ed25519', 'bendybutt-v1', 'gabbygrove-v1', 'buttwoo-v1'];
-    return new RegExp(`ssb:(\/\/)?` +
+    const formatsWith3Parts = [
+        'ed25519',
+        'bendybutt-v1',
+        'gabbygrove-v1',
+        'buttwoo-v1',
+    ];
+    const formatsWith4Parts = ['buttwoo-v1'];
+    const ruleWith3 = `ssb:(\/\/)?` +
         `${type}(\/|:)` +
-        `(${format.join('|')})(\/|:)` +
-        `[a-zA-Z0-9_\-]{43}=`);
+        `(${formatsWith3Parts.join('|')})(\/|:)` +
+        `[a-zA-Z0-9_\-]{43}=`;
+    const ruleWith4 = `ssb:(\/\/)?` +
+        `${type}(\/|:)` +
+        `(${formatsWith4Parts.join('|')})(\/|:)` +
+        `[a-zA-Z0-9_\-]{43}=(\/|:)` +
+        `[a-zA-Z0-9_\-]{43}=`;
+    return new RegExp(`(${ruleWith4}|${ruleWith3})`);
 }
 exports.getFeedSSBURIRegex = getFeedSSBURIRegex;
 function getMessageSSBURIRegex() {
@@ -71782,7 +71836,7 @@ function getMessageSSBURIRegex() {
         'sha256',
         'bendybutt-v1',
         'gabbygrove-v1',
-        'buttwoo-v1'
+        'buttwoo-v1',
     ];
     return new RegExp(`ssb:(\/\/)?` +
         `${type}(\/|:)` +
@@ -71848,8 +71902,15 @@ function validateParts(parts) {
 }
 function compose(parts) {
     validateParts(parts);
-    const { type, format, data } = parts;
-    return `ssb:${type}/${format}/${Base64.unsafeToSafe(data)}`;
+    const { type, format, data, extraData } = parts;
+    const safeData = Base64.unsafeToSafe(data);
+    if (extraData) {
+        const safeExtraData = Base64.unsafeToSafe(extraData);
+        return `ssb:${type}/${format}/${safeData}/${safeExtraData}`;
+    }
+    else {
+        return `ssb:${type}/${format}/${safeData}`;
+    }
 }
 exports.compose = compose;
 function decompose(uri) {
@@ -71857,10 +71918,12 @@ function decompose(uri) {
     if (!pathname) {
         throw new Error('Invalid SSB URI: ' + uri);
     }
-    let [type, format, data] = pathname.split('/');
-    data = Base64.safeToUnsafe(data);
+    const [type, format, safeData, safeExtraData] = pathname.split('/');
+    const data = Base64.safeToUnsafe(safeData);
     const parts = { type, format, data };
     validateParts(parts);
+    if (safeExtraData)
+        parts.extraData = Base64.safeToUnsafe(safeExtraData);
     return parts;
 }
 exports.decompose = decompose;
