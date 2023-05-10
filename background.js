@@ -12,7 +12,10 @@ const TYPE_MAP = {
   'text/markdown': 'markdown',
   'text/gemini': 'gemini',
   'application/json': 'json',
-  'application/ssb+json': 'ssb'
+  // TODO: Hooks for activitystream rendering?
+  'application/activity+json',
+  'application/ld+json',
+  'application/ssb+json': 'ssb',
 }
 
 const SCRIPT_MAP = {
