@@ -1,11 +1,12 @@
 # extension-agregore-renderer
+
 A generalized Markdown/Gemini/JSON content renderer for Agregore. Replaces the old Markdown/Gemini renderers
 
 ## How it works:
 
 There's three "renderers" in separate bundles for markdown/json/gemini.
 
-There is a background pages that listens for when a page finishes loading.
+There is a background page that listens for when a page finishes loading.
 
 Upon this happening, the background page will inject a script which checks the `document.contentType`.
 

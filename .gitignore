@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore bundles, only packaged into the zip
+bundle-gemini.js
+bundle-json.js
+bundle-markdown.js
+bundle-ssb.js
