@@ -31,6 +31,10 @@ jobs:
       - name: "Run build"
         run: "npm run build"
 
+      # I think otherwise a the bundles get excluded
+      - name: "Delete gitignore"
+        run: "rm .gitignore"
+
       - name: 'Zip folder'
         uses: thedoctor0/zip-release@0.7.1
         with:
