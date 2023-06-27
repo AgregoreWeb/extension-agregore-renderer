@@ -13,9 +13,9 @@ const TYPE_MAP = {
   'text/gemini': 'gemini',
   'application/json': 'json',
   // TODO: Hooks for activitystream rendering?
-  'application/activity+json',
-  'application/ld+json',
-  'application/ssb+json': 'ssb',
+  'application/activity+json': 'json',
+  'application/ld+json': 'json',
+  'application/ssb+json': 'ssb'
 }
 
 const SCRIPT_MAP = {

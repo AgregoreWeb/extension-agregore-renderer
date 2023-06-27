@@ -82,7 +82,7 @@ function isURL (value) {
   return (typeof value === 'string') && value.match(URL_REGEX)
 }
 
-function makeLink (url, suffix, value=url) {
+function makeLink (url, suffix, value = url) {
   return `"<a href="${url}">${escapeHtml(value)}</a>"${suffix}`
 }
 
