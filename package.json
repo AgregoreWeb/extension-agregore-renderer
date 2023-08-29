@@ -10,7 +10,8 @@
     "build-json": "browserify ./json.js > bundle-json.js",
     "build-gemini": "browserify ./gemini.js > bundle-gemini.js",
     "build-ssb": "browserify ./ssb.js > bundle-ssb.js",
-    "build": "npm run build-markdown && npm run build-json && npm run build-gemini && npm run build-ssb"
+    "build-reader": "browserify ./reader.js > bundle-reader.js",
+    "build": "npm run build-markdown && npm run build-json && npm run build-gemini && npm run build-ssb && npm run build-reader"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "standard": "^17.0.0"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.4.4",
     "escape-html": "^1.0.3",
     "gemini-to-html": "^2.1.0",
     "html-to-text": "^8.2.0",

@@ -108,3 +108,4 @@ bundle-gemini.js
 bundle-json.js
 bundle-markdown.js
 bundle-ssb.js
+bundle-reader.js

@@ -42,6 +42,19 @@ if(knownType) {
 
 console.log('Waiting to inject rendering code', { SCRIPT_MAP, TYPE_MAP })
 
+chrome.browserAction.onClicked.addListener(({ id: tabId }) => {
+  const readerCode = `
+(function (){
+  const src = "${scriptURL('reader')}"
+  const script = document.createElement('script')
+  script.setAttribute('src', src)
+  script.setAttribute('charset', 'utf-8')
+  document.body.appendChild(script)
+})();
+`
+  chrome.tabs.executeScript(tabId, { code: readerCode })
+})
+
 function handleLoaded ({ tabId, url }) {
   const { protocol } = new URL(url)
   if (FORBIDDEN_PROTOCOLS.includes(protocol)) return
