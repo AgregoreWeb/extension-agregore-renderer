@@ -8,9 +8,7 @@ const { title, content, byline } = article
 const finalContent = `
 <h1>${title}</h1>
 
-<p>
-${byline}
-</p>
+${byline ? `<p>${byline}</p>` : ''}
 
 <hr>
 
