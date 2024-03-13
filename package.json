@@ -30,11 +30,11 @@
   "dependencies": {
     "@mozilla/readability": "^0.4.4",
     "escape-html": "^1.0.3",
-    "gemini-to-html": "^2.1.0",
+    "gemini-to-html": "^2.2.0",
     "html-to-text": "^8.2.0",
     "marked": "^4.0.16",
     "ssb-fetch": "^1.5.2",
-    "ssb-markdown": "github:av8ta/ssb-markdown",
+    "ssb-markdown": "^6.0.7",
     "ssb-ref": "^2.16.0",
     "ssb-uri2": "^1.8.1"
   },
