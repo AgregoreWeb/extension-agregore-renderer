@@ -23,7 +23,7 @@ ${content}
   if(window.hljs) hljs.initHighlightingOnLoad()
 </script>
 `)
-document.close()
-// Needed to trigger document load detection
-dispatchEvent(new Event('load'));
+  document.close()
+  // Needed to trigger document load detection
+  window.dispatchEvent(new Event('load'))
 }
