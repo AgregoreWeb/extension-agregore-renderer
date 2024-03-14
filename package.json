@@ -1,6 +1,6 @@
 {
   "name": "extension-agregore-renderer",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "A generalized Markdown/Gemini/ETC content renderer for Agregore. Replaces the old Markdown/Gemini renderers",
   "private": true,
   "scripts": {
