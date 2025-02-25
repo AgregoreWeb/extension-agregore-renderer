@@ -27,6 +27,8 @@ const SCRIPT_MAP = {
 
 const code = `
 (function (){
+if(window.HAS_AGREGORE_RENDERED) return
+window.HAS_AGREGORE_RENDERED = true
 const TYPE_MAP = ${JSON.stringify(TYPE_MAP)}
 const SCRIPT_MAP = ${JSON.stringify(SCRIPT_MAP)}
 const knownType = TYPE_MAP[document.contentType]
