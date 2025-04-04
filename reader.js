@@ -11,10 +11,21 @@ let cleanedContent = content
 try {
   const parsed = (new DOMParser()).parseFromString(content, 'text/html')
 
-  // Find the first paragraph
-  const firstP = parsed.querySelector('p')
-  const parent = firstP.parentElement
-  cleanedContent = parent.innerHTML
+  const mainContents = parsed.querySelector('.page').childNodes[0]
+  const container = parsed.createElement('main')
+
+  for (const child of [...mainContents.childNodes]) {
+    if (child.tagName === 'DIV') {
+      const wrapper = document.createElement('p')
+      wrapper.innerHTML = child.innerHTML
+      container.appendChild(wrapper)
+      continue
+    }
+    container.appendChild(child)
+  }
+
+  // Find the container with all the paragraphs
+  cleanedContent = container.innerHTML
 } catch (e) {
   console.error('Unable to clean article', e)
 }
