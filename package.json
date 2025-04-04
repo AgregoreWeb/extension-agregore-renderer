@@ -28,7 +28,7 @@
     "standard": "^17.0.0"
   },
   "dependencies": {
-    "@mozilla/readability": "^0.4.4",
+    "@mozilla/readability": "^0.6.0",
     "escape-html": "^1.0.3",
     "gemini-to-html": "^2.2.0",
     "html-to-text": "^8.2.0",
