@@ -14,6 +14,7 @@ ${content}
     const anchor = document.createElement('a')
     anchor.setAttribute('href', '#' + element.id)
     anchor.setAttribute('class', 'agregore-header-anchor')
+    anchor.innerHTML = element.innerHTML
     element.innerHTML = anchor.outerHTML
   }
 
@@ -21,15 +22,16 @@ ${content}
   function addTableSorting() {
     const tables = document.querySelectorAll('table')
     
-    tables.forEach(table => {
+    for (const table of tables) {
       const thead = table.querySelector('thead')
       const tbody = table.querySelector('tbody')
       
-      if (!thead || !tbody) return
+      if (!thead || !tbody) continue
       
       const headerCells = thead.querySelectorAll('th')
       
-      headerCells.forEach((headerCell, columnIndex) => {
+      for (let columnIndex = 0; columnIndex < headerCells.length; columnIndex++) {
+        const headerCell = headerCells[columnIndex]
         // Create sort button
         const sortButton = document.createElement('button')
         sortButton.innerHTML = '↕️'
@@ -43,21 +45,20 @@ ${content}
         
         // Append button to header cell
         headerCell.appendChild(sortButton)
-      })
-    })
+      }
+    }
   }
 
   function handleSort(table, columnIndex, clickedButton) {
     const tbody = table.querySelector('tbody')
-    const rows = Array.from(tbody.querySelectorAll('tr'))
-    const currentSortState = clickedButton.getAttribute('data-sort-state')
+    const currentSortState = clickedButton.dataset.sortState
     
     // Reset all sort buttons to unsorted state
     const allSortButtons = table.querySelectorAll('.agregore-sort-btn')
-    allSortButtons.forEach(btn => {
+    for (const btn of allSortButtons) {
       btn.innerHTML = '↕️'
       btn.setAttribute('data-sort-state', 'unsorted')
-    })
+    }
     
     // Determine new sort state
     let newSortState, newSortIcon
@@ -74,7 +75,15 @@ ${content}
     clickedButton.setAttribute('data-sort-state', newSortState)
     
     // Sort rows
-    const sortedRows = rows.sort((rowA, rowB) => {
+    const rowElements = tbody.querySelectorAll('tr')
+    const sortedRows = []
+    
+    // Collect rows into array for sorting
+    for (const row of rowElements) {
+      sortedRows.push(row)
+    }
+    
+    sortedRows.sort((rowA, rowB) => {
       const cellA = rowA.cells[columnIndex]
       const cellB = rowB.cells[columnIndex]
       
@@ -101,15 +110,13 @@ ${content}
     
     // Replace table body with sorted rows
     tbody.innerHTML = ''
-    sortedRows.forEach(row => tbody.appendChild(row))
+    for (const row of sortedRows) {
+      tbody.appendChild(row)
+    }
   }
 
-  // Initialize table sorting when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addTableSorting)
-  } else {
-    addTableSorting()
-  }
+  // Initialize table sorting
+  addTableSorting()
 </script>
 `)
   document.close()
