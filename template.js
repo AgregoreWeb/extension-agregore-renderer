@@ -21,13 +21,16 @@ ${content}
   // Table sorting functionality
   function addTableSorting() {
     const tables = document.querySelectorAll('table')
-    
+
     for (const table of tables) {
       const thead = table.querySelector('thead')
       const tbody = table.querySelector('tbody')
-      
+
       if (!thead || !tbody) continue
-      
+
+      const hasHeaderButtons = table.querySelector('th button, th a')
+      if (hasHeaderButtons) continue
+
       const headerCells = thead.querySelectorAll('th')
       
       for (let columnIndex = 0; columnIndex < headerCells.length; columnIndex++) {
