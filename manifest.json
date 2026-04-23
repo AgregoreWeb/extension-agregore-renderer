@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Agregore Renderer",
-	"version": "2.3.1",
+	"version": "2.4.0",
 	"description": "Render Markdown/Gemini/JSON",
 	"permissions": [
 		"tabs",
